@@ -635,12 +635,27 @@ class tabletLayout extends StatelessWidget {
               children: <Widget>[],
             ),
           ),
+          SizedBox(height: 10),
           Center(
             child: Text(
               userName,
-              style: TextStyle(color: maincolor, fontSize: fontsizeLarge),
+              style: TextStyle(
+                  color: maincolor,
+                  fontSize: fontsizeLarge,
+                  fontWeight: FontWeight.bold),
             ),
           ),
+          SizedBox(height: 10),
+          Center(
+            child: Text(
+              deptName,
+              style: TextStyle(
+                  color: maincolor,
+                  fontSize: fontsizeLarge,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
