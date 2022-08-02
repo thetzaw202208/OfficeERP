@@ -459,7 +459,6 @@ class _LoginPageState extends State<LoginPage> {
           prefs.setString("userName", userName);
           prefs.setString("DeptName", deptName);
           prefs.setString("gender", gender);
-
           //userinfo = res['d'][0]['Email'];
         });
         Navigator.push(

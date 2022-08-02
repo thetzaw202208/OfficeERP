@@ -4,24 +4,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:auth_app_3fac/Home/home_screen.dart';
-import 'package:auth_app_3fac/Login/login_screen.dart';
-import 'package:auth_app_3fac/main.dart';
-import 'package:auth_app_3fac/model/meeting_room_no_model.dart';
 import 'package:auth_app_3fac/utils/color.dart';
 import 'package:auth_app_3fac/utils/constants.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:group_radio_button/group_radio_button.dart';
 import 'package:intl/intl.dart';
-import 'package:multi_select_flutter/chip_field/multi_select_chip_field.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
-import 'package:platform_device_id/platform_device_id.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:http/http.dart' as http;
 

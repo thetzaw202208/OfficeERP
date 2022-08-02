@@ -20,7 +20,7 @@ var gender;
 bool male = false;
 var userID;
 var userName = "__";
-var deptName;
+var deptName = "__";
 
 class MyHomePage extends StatefulWidget {
   // MyHomePage(
@@ -78,15 +78,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  _init() async {
+  Future _init() async {
     setState(() {
       isLoading = true;
     });
     SharedPreferences pref = await SharedPreferences.getInstance();
     userID = await pref.getString("userID");
     userName = pref.getString("userName")!;
-    deptName = pref.getString("deptName");
+
     gender = pref.getString("gender");
+    deptName = pref.getString("DeptName")!;
     print("Gender is");
     if (gender == "Male") {
       setState(() {
@@ -413,23 +414,44 @@ class androidLayout extends StatelessWidget {
           : const EdgeInsets.all(30.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            height: Device.get().isTablet
-                ? MediaQuery.of(context).size.width * 0.64
-                : 300,
-            width: MediaQuery.of(context).size.width * 1.5,
-            decoration: const BoxDecoration(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
                 color: Colors.white,
                 image: DecorationImage(
-                    image: AssetImage('assets/images/ERP.png'),
+                    image: male
+                        ? AssetImage('assets/images/boy.png')
+                        : AssetImage('assets/images/girl.png'),
                     fit: BoxFit.fitHeight)),
             child: Stack(
               children: <Widget>[],
             ),
           ),
+          SizedBox(height: 20),
+          Center(
+            child: Text(
+              userName,
+              style: TextStyle(
+                  color: maincolor,
+                  fontSize: fontsizeLarge,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 10),
+          Center(
+            child: Text(
+              deptName,
+              style: TextStyle(
+                  color: maincolor,
+                  fontSize: fontsizeLarge,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 30), //DeptName
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
