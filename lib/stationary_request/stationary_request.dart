@@ -15,6 +15,7 @@ import 'package:group_radio_button/group_radio_button.dart';
 import 'package:intl/intl.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: camel_case_types, use_key_in_widget_constructors
 class StationaryRequestPage extends StatefulWidget {
@@ -123,7 +124,7 @@ class _StationaryRequestPageState extends State<StationaryRequestPage> {
   var _currentTab = 0;
   List<String> selectedDays = [];
   final _multiSelectKey = GlobalKey<FormFieldState>();
-  List<String> meetingrooms = [];
+  List<String> stationaryNames = [];
   int _stackIndex = 0;
   var changecolor;
   bool onTapped = false;
@@ -136,8 +137,8 @@ class _StationaryRequestPageState extends State<StationaryRequestPage> {
   String? selectedRoomTypeValue;
   String? selectedfacility;
   var alert_msg = "";
-  var username;
-  var userinfo;
+  var userName;
+  var userID;
   var url;
   var fromDate = "From Date";
   var toDate = "To Date";
@@ -162,49 +163,48 @@ class _StationaryRequestPageState extends State<StationaryRequestPage> {
     // toDate = DateFormat.yMd().format(dateNow);
     fromTime = DateFormat.jm().format(timeNow);
     toTime = DateFormat.jm().format(timeNow);
+    _init();
 
     //getMeetingTypeRooms();
   }
 
-  getMeetingTypeRooms() async {
-    try {
-      // if (URL != null) {
-      //   LoginURL = URL + loginSuffix;
-      // } else {
-      //   LoginURL = loginURL + loginSuffix;
-      // }
+  _init() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    userID = await pref.getString("userID");
+    print("UserID is $userID");
+    getCombo();
+  }
 
-      //print("Login URL combine" + LoginURL);
-      var roomTyperequest = {
-        "RequestID": "14248142-7C84-4680-B2D6-F088A9B0F527",
-        "headerCode": "MEETINGTYPE",
-      };
+  getCombo() async {
+    try {
+      var roomTyperequest = {"RequestID": userID};
       //print(LoginURL);
-      //print(loginrequest);
+      print(roomTyperequest);
       var response;
       response = await http
           .post(
               Uri.parse(
-                  "http://172.16.8.15:7373/WebServices/WebService_Meeting.asmx/GetMeetingTypeCombo"), //GetMeetingRoomNoJSON
+                  "http://10.1.11.176:3474/WebServices/WebService_Stationary.asmx/GetStationaryNameJSONCombo"), //GetMeetingRoomNoJSON
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
               body: jsonEncode(roomTyperequest))
           .timeout(Duration(seconds: 60));
       var respond = jsonDecode(response.body);
+      print(respond);
       var res = jsonDecode(respond['d']);
       print(res);
-      meetingrooms.clear();
+      stationaryNames.clear();
       for (var i = 0; i < res.length; i++) {
-        meetingrooms.add(res[i]['CODEDESP']);
+        stationaryNames.add(res[i]['StationaryName']);
         // roomType.add(res[i]['']);
         //roomType[i] = res[i];
       }
-      print(meetingrooms);
+      print(stationaryNames);
       //print(roomType);
       //selectedRoomTypeValue = meetingrooms[0];
       //selectedTypeValue = roomType[0]['CODEDESP'];
-      print("Respond Room Type value");
+      print("Respond Stationary value");
       // print(res);
       // List<MeetingRoomNo> tagObjs =
       //     res.map((tagJson) => MeetingRoomNo.fromJson(tagJson)).toList();
@@ -677,7 +677,7 @@ class _StationaryRequestPageState extends State<StationaryRequestPage> {
                                         borderRadius: BorderRadius.circular(15),
                                       ),
 
-                                      items: rooms
+                                      items: stationaryNames
                                           .map((item) =>
                                               DropdownMenuItem<String>(
                                                 value: item,

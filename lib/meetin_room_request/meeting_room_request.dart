@@ -548,7 +548,7 @@ class _MeetingRoomrequestPageState extends State<MeetingRoomrequestPage> {
       response = await http
           .post(
               Uri.parse(
-                  "http://172.16.8.15:7373/WebServices/WebService_Meeting.asmx/GetRoomNoCombo"), //GetMeetingRoomNoJSON
+                  "http://172.16.8.15:7373/WebServices/WebService_Meeting.asmx/GetRoomNoCombo"), //WebServices/WebService_Stationary.asmx/GetStationaryNameJSONCombo
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },

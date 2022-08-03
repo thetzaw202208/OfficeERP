@@ -41,6 +41,9 @@ class MultiSelectChip extends StatefulWidget {
 
 bool isTap = false;
 
+bool needDriver = false;
+bool isRoundTrip = false;
+
 class _MultiSelectChipState extends State<MultiSelectChip> {
   // String selectedChoice = "";
   List<String> selectedChoices = [];
@@ -83,6 +86,18 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
                       : selectedChoices.add(item);
                   widget.onSelectionChanged?.call(selectedChoices);
                 });
+                for (var i = 0; i < selectedChoices.length; i++) {
+                  if (selectedChoices[i] == "Need Driver") {
+                    print("Select need $selected");
+                    setState(() {
+                      needDriver = true;
+                    });
+                  } else {
+                    setState(() {
+                      isRoundTrip = true;
+                    });
+                  }
+                }
               }
             },
           ),
@@ -249,6 +264,7 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
   var alert_msg = "";
   var username;
   var userID;
+  var deptname;
   var url;
   var fromDate = "From Date";
   var toDate = "To Date";
@@ -277,6 +293,9 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
   getData() async {
     SharedPreferences getData = await SharedPreferences.getInstance();
     userID = getData.getString("userID");
+
+    username = getData.getString("userName");
+    deptname = getData.getString("deptName");
   }
 
   @override
@@ -873,29 +892,63 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
                           alignment: Alignment.bottomCenter,
                           child: Padding(
                               padding: EdgeInsets.all(25),
-                              child: Container(
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    gradient: LinearGradient(colors: [
-                                      maincolor,
-                                      maincolor,
-                                    ])),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.save,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      "Save",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: fontsizeLarge,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  ],
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (_desc.text != "" &&
+                                      selectedFromTime != null &&
+                                      selectedToTime != null &&
+                                      _noOfpassenger.text != "") {
+                                    goSave();
+                                  } else {
+                                    setState(() {
+                                      isLoading = false;
+                                      //print("Login Sucess");
+                                      // prefs.setString("logout", "0");
+                                      AwesomeDialog(
+                                        context: context,
+                                        animType: AnimType.LEFTSLIDE,
+                                        headerAnimationLoop: false,
+                                        dialogType: DialogType.ERROR,
+                                        showCloseIcon: true,
+                                        title: 'Input Error',
+                                        desc: 'Please fill the required data !',
+                                        btnOkOnPress: () {
+                                          debugPrint('OnClcik');
+                                        },
+                                        btnOkIcon: Icons.check_circle,
+                                        onDissmissCallback: (type) {
+                                          debugPrint(
+                                              'Dialog Dissmiss from callback $type');
+                                        },
+                                      ).show();
+                                      //userinfo = res['d'][0]['Email'];
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      gradient: LinearGradient(colors: [
+                                        maincolor,
+                                        maincolor,
+                                      ])),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.save,
+                                        color: Colors.white,
+                                      ),
+                                      Text(
+                                        "Save",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: fontsizeLarge,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               )),
                         )),
@@ -946,26 +999,166 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
       toTimeRequest = totimeReq[0];
     }
     try {
+      print("Saving vehicle");
+      var saverequest = {
+        "createdby": "14248142-7C84-4680-B2D6-F088A9B0F527",
+        "RequestVehicleID": "",
+        "SampleRequestVehicleID": "",
+        "RequestVehicleDetailID": "",
+        "FromPlace": _fromPlace.text,
+        "ToPlace": _toPlace.text,
+        "Description": _desc.text,
+        "RequiredDate": fromDate
+      };
+      print("LoginURL");
+      print(jsonEncode(saverequest));
+      http.Response response;
+      response = await http
+          .post(
+              Uri.parse(
+                  "http://localhost:3474/WebServices/WebService_Vehicle.asmx/SaveDetailVehicleRequest"), //GetMeetingRoomNoJSON
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+              },
+              body: jsonEncode(saverequest))
+          .timeout(Duration(seconds: 60));
+      var respond = jsonDecode(response.body);
+      print("Respond value vehicle");
+      print(respond);
+
+      if (respond['d'] != "") {
+        // setState(() {
+        //   isLoading = false;
+
+        //   AwesomeDialog(
+        //     context: context,
+        //     animType: AnimType.LEFTSLIDE,
+        //     headerAnimationLoop: false,
+        //     dialogType: DialogType.SUCCES,
+        //     showCloseIcon: true,
+        //     title: 'Success',
+        //     desc: 'Saved Successfully',
+        //     btnOkOnPress: () {
+        //       debugPrint('OnClcik');
+        //     },
+        //     btnOkIcon: Icons.check_circle,
+        //     onDissmissCallback: (type) {
+        //       debugPrint('Dialog Dissmiss from callback $type');
+        //     },
+        //   ).show();
+        // });
+        goSaveVehicle();
+      } else if (respond['d'] == "") {
+        setState(() {
+          isLoading = false;
+        });
+        const snackBar = SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            'Fail',
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+
+        snackbarKey.currentState?.showSnackBar(snackBar);
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        const snackBar = SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            'Server respond error',
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+        snackbarKey.currentState?.showSnackBar(snackBar);
+      }
+    } on TimeoutException catch (_) {
+      // A timeout occurred.
+      setState(() {
+        isLoading = false;
+      });
+      const snackBar = SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Server timeout !!',
+          style: TextStyle(color: Colors.white),
+        ),
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      const snackBar = SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Server error !!',
+          style: TextStyle(color: Colors.white),
+        ),
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+    }
+  }
+
+  goSaveVehicle() async {
+    setState(() {
+      isLoading = true;
+    });
+    String toTimeRequest;
+    String fromTimeRequest;
+    var fromtimeReq = selectedFromTime.toString().split(" ");
+    if (fromtimeReq[1] == "PM") {
+      print("Hello");
+      print(fromtimeReq[0]);
+      var a = fromtimeReq[0].toString().split(":");
+      print("hererererrer");
+      print(a);
+      var b = a[0];
+      print(b);
+      var f = int.parse(b) + int.parse("12");
+      print(f);
+      fromTimeRequest = "$f:${a[1]}";
+      print(fromTimeRequest);
+    } else {
+      fromTimeRequest = fromtimeReq[0];
+    }
+
+    var totimeReq = selectedToTime.toString().split(" ");
+
+    if (totimeReq[1] == "PM") {
+      print("Hello");
+      print(totimeReq[0]);
+      var a = totimeReq[0].toString().split(":");
+      print("hererererrer");
+      print(a);
+      var b = a[0];
+      print(b);
+      var f = int.parse(b) + int.parse("12");
+      print(f);
+      toTimeRequest = "$f:${a[1]}";
+      print(toTimeRequest);
+    } else {
+      toTimeRequest = totimeReq[0];
+    }
+    try {
       var saverequest = {
         "createdby": userID,
         "RequestId": userID,
-        "RequestMeetingID": "",
-        //"RequestBy": userName,
-        "roomName": selectedValue,
-        "meetingRoomName": selectedTypeValue,
-        "MeetingDate": fromDate.toString(),
+        "RequestBy": username,
+        "RequestVehicleID": "id after save detail request",
+        "SampleRequestVehicleID": "id after save detail request",
+        "Description": _desc,
+        "RequiredDate": fromDate,
+        "NumberOfPassenger": _noOfpassenger.text,
         "StartTime": fromTimeRequest,
         "EndTime": toTimeRequest,
-        "qty": _noOfpassenger.text,
-        "isUrgent": _verticalGroupValue == "Normal" ? false : true,
-        "Description": _desc.text,
-        "Remark": "",
-        "MeetingType": selectedRoomTypeValue,
-        "ParticipantCompany": "",
-        "Facility": "",
-
-        "ScheduleStartDate": fromDate.toString(),
-        "ScheduleEndDate": toDate.toString(),
+        "IsUrgent": _verticalGroupValue == "Normal" ? false : true,
+        //"IsSpecial": true,
+        "NeedDriver": needDriver,
+        "IsRoundTrip": isRoundTrip,
+        "NameOfPerson": _names.text
       };
       //print(LoginURL);
       print(jsonEncode(saverequest));
@@ -973,7 +1166,7 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
       response = await http
           .post(
               Uri.parse(
-                  "http://172.16.8.15:7373/WebServices/WebService_Meeting.asmx/RequestMeetingRoom"), //GetMeetingRoomNoJSON
+                  "http://localhost:3474/WebServices/WebService_Vehicle.asmx/SaveDetailVehicleRequest"), //GetMeetingRoomNoJSON
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
@@ -981,30 +1174,11 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
           .timeout(Duration(seconds: 60));
       var respond = jsonDecode(response.body);
       print(respond);
-      // var res = jsonDecode(respond['d']);
-      // print(res);
-      facilities.clear();
-      // for (var i = 0; i < res.length; i++) {
-      //   facilities.add(res[i]['CODEDESP']);
-      //   // roomType.add(res[i]['']);
-      //   //roomType[i] = res[i];
-      // }
-      print(facilities);
-      //print(roomType);
-      //selectedfacility = facilities[0];
-      //selectedTypeValue = roomType[0]['CODEDESP'];
-      print("Respond Room Type value");
-      // print(res);
-      // List<MeetingRoomNo> tagObjs =
-      //     res.map((tagJson) => MeetingRoomNo.fromJson(tagJson)).toList();
-      // print(tagObjs);
-      if (respond['d'] != "") {
-        //saveInfo(res['data']['userData']['userId']);
 
+      if (respond['d'] != "") {
         setState(() {
           isLoading = false;
-          //print("Login Sucess");
-          // prefs.setString("logout", "0");
+
           AwesomeDialog(
             context: context,
             animType: AnimType.LEFTSLIDE,
@@ -1021,19 +1195,7 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
               debugPrint('Dialog Dissmiss from callback $type');
             },
           ).show();
-          //userinfo = res['d'][0]['Email'];
         });
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => MyHomePage()));
-        // const snackBar = SnackBar(
-        //   backgroundColor: blue,
-        //   content: Text(
-        //     'Get Data Room Type Successfully',
-        //     style: TextStyle(color: Colors.white),
-        //   ),
-        // );
-
-        // snackbarKey.currentState?.showSnackBar(snackBar);
       } else if (respond['d'] == "") {
         setState(() {
           isLoading = false;
@@ -1041,7 +1203,7 @@ class _VehicleRequestPageState extends State<VehicleRequestPage> {
         const snackBar = SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            'UserID or password is incorrect',
+            'Fail',
             style: TextStyle(color: Colors.white),
           ),
         );

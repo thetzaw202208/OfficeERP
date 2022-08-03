@@ -73,15 +73,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //_timer = new Timer(Duration(hours: 24), () => removeData());
     Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        isLoading = true;
+        _init();
+      });
       //print("Executed after waiting seconds");
-      _init();
     });
   }
 
   Future _init() async {
-    setState(() {
-      isLoading = true;
-    });
     SharedPreferences pref = await SharedPreferences.getInstance();
     userID = await pref.getString("userID");
     userName = pref.getString("userName")!;
@@ -90,17 +90,17 @@ class _MyHomePageState extends State<MyHomePage> {
     deptName = pref.getString("DeptName")!;
     print("Gender is");
     if (gender == "Male") {
-      setState(() {
-        isLoading = false;
-      });
       male = true;
       print("Gender is male $male");
-    } else {
       setState(() {
         isLoading = false;
       });
+    } else {
       male = false;
       print("Gender is male $male");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -131,9 +131,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   //background: Container(color: const Color(0xFFF5F5F5))
                 ),
             home: isLoading
-                ? spinkit
+                ? CircularProgressIndicator(
+                    value: 1,
+                  )
                 : Scaffold(
                     appBar: AppBar(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(30),
+                      )),
                       automaticallyImplyLeading: true,
                       toolbarHeight: Device.get().isTablet ? 80 : 70,
                       elevation: 0,
@@ -282,87 +288,87 @@ class _MyHomePageState extends State<MyHomePage> {
                                   height: 1,
                                   thickness: 0.5,
                                 )),
-                            ListTile(
-                              leading: Icon(Icons.meeting_room),
-                              title: Text(
-                                'Request Meeting Room',
-                                style: TextStyle(
-                                    color: blue,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: fontsizeSmall),
-                              ),
-                              onTap: () {
-                                // if (!mounted) {
-                                //   dispose();
-                                // }
-                                //_channel.sink.close();
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            MeetingRoomrequestPage()));
-                              },
-                            ),
-                            Container(
-                                margin: EdgeInsets.only(left: 20, right: 20),
-                                child: Divider(
-                                  height: 1,
-                                  thickness: 0.5,
-                                )),
-                            ListTile(
-                              leading: Icon(Icons.local_taxi),
-                              title: Text(
-                                'Vehicle Request',
-                                style: TextStyle(
-                                    color: blue,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: fontsizeSmall),
-                              ),
-                              onTap: () {
-                                // if (!mounted) {
-                                //   dispose();
-                                // }
-                                //_channel.sink.close();
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            VehicleRequestPage()));
-                              },
-                            ),
-                            Container(
-                                margin: EdgeInsets.only(left: 20, right: 20),
-                                child: Divider(
-                                  height: 1,
-                                  thickness: 0.5,
-                                )),
-                            ListTile(
-                              leading: Icon(Icons.add_shopping_cart_rounded),
-                              title: Text(
-                                'Stationary Request',
-                                style: TextStyle(
-                                    color: blue,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: fontsizeSmall),
-                              ),
-                              onTap: () {
-                                // if (!mounted) {
-                                //   dispose();
-                                // }
-                                //_channel.sink.close();
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            StationaryRequestPage()));
-                              },
-                            ),
-                            Container(
-                                margin: EdgeInsets.only(left: 20, right: 20),
-                                child: Divider(
-                                  height: 1,
-                                  thickness: 0.5,
-                                )),
+                            // ListTile(
+                            //   leading: Icon(Icons.meeting_room),
+                            //   title: Text(
+                            //     'Request Meeting Room',
+                            //     style: TextStyle(
+                            //         color: blue,
+                            //         fontWeight: FontWeight.w600,
+                            //         fontSize: fontsizeSmall),
+                            //   ),
+                            //   onTap: () {
+                            //     // if (!mounted) {
+                            //     //   dispose();
+                            //     // }
+                            //     //_channel.sink.close();
+                            //     Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) =>
+                            //                 MeetingRoomrequestPage()));
+                            //   },
+                            // ),
+                            // Container(
+                            //     margin: EdgeInsets.only(left: 20, right: 20),
+                            //     child: Divider(
+                            //       height: 1,
+                            //       thickness: 0.5,
+                            //     )),
+                            // ListTile(
+                            //   leading: Icon(Icons.local_taxi),
+                            //   title: Text(
+                            //     'Vehicle Request',
+                            //     style: TextStyle(
+                            //         color: blue,
+                            //         fontWeight: FontWeight.w600,
+                            //         fontSize: fontsizeSmall),
+                            //   ),
+                            //   onTap: () {
+                            //     // if (!mounted) {
+                            //     //   dispose();
+                            //     // }
+                            //     //_channel.sink.close();
+                            //     Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) =>
+                            //                 VehicleRequestPage()));
+                            //   },
+                            // ),
+                            // Container(
+                            //     margin: EdgeInsets.only(left: 20, right: 20),
+                            //     child: Divider(
+                            //       height: 1,
+                            //       thickness: 0.5,
+                            //     )),
+                            // ListTile(
+                            //   leading: Icon(Icons.add_shopping_cart_rounded),
+                            //   title: Text(
+                            //     'Stationary Request',
+                            //     style: TextStyle(
+                            //         color: blue,
+                            //         fontWeight: FontWeight.w600,
+                            //         fontSize: fontsizeSmall),
+                            //   ),
+                            //   onTap: () {
+                            //     // if (!mounted) {
+                            //     //   dispose();
+                            //     // }
+                            //     //_channel.sink.close();
+                            //     Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) =>
+                            //                 StationaryRequestPage()));
+                            //   },
+                            // ),
+                            // Container(
+                            //     margin: EdgeInsets.only(left: 20, right: 20),
+                            //     child: Divider(
+                            //       height: 1,
+                            //       thickness: 0.5,
+                            //     )),
                             ListTile(
                               leading: Icon(Icons.logout),
                               title: Text(
@@ -447,7 +453,7 @@ class androidLayout extends StatelessWidget {
               deptName,
               style: TextStyle(
                   color: maincolor,
-                  fontSize: fontsizeLarge,
+                  fontSize: fontsizeSmallest,
                   fontWeight: FontWeight.bold),
             ),
           ),
@@ -600,7 +606,7 @@ class androidLayout extends StatelessWidget {
                         ))),
                   )),
             ],
-          ),
+          )
         ],
       ),
     );
@@ -651,7 +657,7 @@ class tabletLayout extends StatelessWidget {
               deptName,
               style: TextStyle(
                   color: maincolor,
-                  fontSize: fontsizeLarge,
+                  fontSize: fontsizeSmallest,
                   fontWeight: FontWeight.bold),
             ),
           ),
@@ -672,6 +678,9 @@ class tabletLayout extends StatelessWidget {
                   width: 200,
                   height: 160,
                   child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       clipBehavior: Clip.none,
                       elevation: 20,
                       child: Container(
@@ -706,6 +715,9 @@ class tabletLayout extends StatelessWidget {
                       print("Click Request Stationary")
                     },
                     child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         elevation: 20,
                         child: Container(
                             child: Column(
@@ -738,6 +750,9 @@ class tabletLayout extends StatelessWidget {
                       print("Click Request room");
                     },
                     child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         elevation: 20,
                         child: Container(
                             child: Column(
