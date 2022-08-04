@@ -156,7 +156,7 @@ class _StationaryRequestPageState extends State<StationaryRequestPage> {
   @override
   void initState() {
     super.initState();
-    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
     fromDate = formatter.format(dateNow);
     toDate = formatter.format(dateNow);
     // fromDate = DateFormat.yMd().format(dateNow);
@@ -184,7 +184,7 @@ class _StationaryRequestPageState extends State<StationaryRequestPage> {
       response = await http
           .post(
               Uri.parse(
-                  "http://10.1.11.176:3474/WebServices/WebService_Stationary.asmx/GetStationaryNameJSONCombo"), //GetMeetingRoomNoJSON
+                  "http://localhost:3474/WebServices/WebService_Stationary.asmx/GetStationaryNameJSONCombo"), //GetMeetingRoomNoJSON
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
@@ -487,7 +487,7 @@ class _StationaryRequestPageState extends State<StationaryRequestPage> {
                                       print(newDateTime);
                                       setState(() {
                                         final DateFormat formatter =
-                                            DateFormat('dd/MM/yyyy');
+                                            DateFormat('yyyy-MM-dd');
                                         final String formatted =
                                             formatter.format(newDateTime!);
                                         fromDate = formatted;

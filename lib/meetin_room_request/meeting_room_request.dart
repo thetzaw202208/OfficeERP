@@ -1820,7 +1820,7 @@ class _MeetingRoomrequestPageState extends State<MeetingRoomrequestPage> {
                                               // var time = selectdDate.split(" ");
                                               // fromDate = time[0];
                                               final DateFormat formatter =
-                                                  DateFormat('dd/MM/yyyy');
+                                                  DateFormat('yyyy-MM-dd');
                                               final String formatted = formatter
                                                   .format(newDateTime!);
                                               toDate = formatted;
