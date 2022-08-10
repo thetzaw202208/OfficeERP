@@ -1,6 +1,0 @@
-package com.pai.office_erp
-
-import io.flutter.embedding.android.FlutterActivity
-
-class MainActivity: FlutterActivity() {
-}
